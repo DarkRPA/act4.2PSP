@@ -5,7 +5,7 @@ import java.io.Serializable;
 import psp.tematres.chatdam.client.UdpChatClient;
 //TODO: revisar, optimizar y documentar el código (JavaDoc)
 public class Message implements Serializable{
-	private static final long serialVersionUID = -1234L;
+	private static final long serialVersionUID = -1222334L;
 	private UdpChatClient udpChatClientFrom,udpChatClientTo;
 	private String message;
 	public Message(UdpChatClient udpChatClientFrom,
@@ -13,6 +13,7 @@ public class Message implements Serializable{
 			String message) {
 		this.udpChatClientFrom=udpChatClientFrom;
 		this.udpChatClientTo=udpChatClientTo;
+		this.message = message;
 	}
 	public String gerMessage() {
 		return this.message;

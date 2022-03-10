@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import psp.tematres.chatdam.client.UdpChatClient;
+import psp.tematres.chatdam.util.Message;
 
 //TODO: revisar, optimizar y documentar el código (JavaDoc)
 public class ThreadChatServer extends Thread{
@@ -30,28 +31,39 @@ public class ThreadChatServer extends Thread{
 	public void run() {
 		//hay que leer los datos de identificación del cliente UDP
 		//esperamos los datos del cliente UDP
-		UdpChatClient udpChatClient;
 		try {
 			long count=0;
-			udpChatClient = (UdpChatClient) fEntrada.readObject();
-			//si no existe se añade a la lista de clientes UDP
-			if((count = this.udpClients.stream().filter(u->u.getNickName().equals(udpChatClient.getNickName())
-					&& u.getUdpPort()==udpChatClient.getUdpPort()).count())==0) {
-				this.udpClients.add(udpChatClient);
-				this.serverSocket.setUdpChatClients(udpClients);
+			Object peticion;
+			boolean conexionCerrada = false;
+			while(!conexionCerrada){
+				peticion = fEntrada.readObject();
+				if(peticion instanceof Message){
+					//Debemos de comprobar el contenido del mensaje
+					Message mensaje = (Message) peticion;
+					if(mensaje.getUdpChatClientFrom() == null || mensaje.getUdpChatClientTo() == null){
+						//Es un mensaje mal formado o un mensaje de comando
+						switch (mensaje.gerMessage()) {
+							case "getLista":
+								//Quiere la lista por lo que se la devolvemos
+								this.fSalida.writeObject(ThreadChatServer.udpClients);
+								break;
+						
+							default:
+								break;
+						}
+					}
+				}else if(peticion instanceof UdpChatClient){
+					//Es el cliente enseñando su saludo inicial
+					UdpChatClient clienteReal = (UdpChatClient) peticion;
+					if((count = ThreadChatServer.udpClients.stream().filter(e-> e.getNickName().equals(clienteReal.getNickName())).count()) == 0){
+						//No es repetido
+						ThreadChatServer.udpClients.add(clienteReal);
+						this.fSalida.writeObject(ThreadChatServer.udpClients);
+					}
+				}
 			}
-			//se devuelve la lista de clientes UDP al cliente que se ha conectado
-			this.fSalida.writeObject(this.udpClients);
 		} catch (ClassNotFoundException | IOException e1) {
 			e1.printStackTrace();
-		}finally {
-			try {
-				fSalida.close();
-				fEntrada.close();
-				this.socket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }
