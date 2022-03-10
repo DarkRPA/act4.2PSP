@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import psp.tematres.chatdam.client.UdpChatClient;
-import psp.tematres.multisockets.HiloServidor;
-import psp.tematres.multisockets.Servidor;
-import psp.tematres.multisockets.SocketCliente;
 
 //TODO: revisar, optimizar y documentar el código (JavaDoc)
 public class ChatServer {
