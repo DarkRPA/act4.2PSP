@@ -11,7 +11,7 @@ import psp.tematres.chatdam.util.Message;
 
 //TODO: revisar, optimizar y documentar el código (JavaDoc)
 public class ThreadChatServer extends Thread{
-	private static ArrayList<UdpChatClient> udpClients=new ArrayList<UdpChatClient>();
+	private static ArrayCliente udpClients = new ArrayCliente();
 	private ChatServer serverSocket;
 	private ObjectInputStream fEntrada;
 	private ObjectOutputStream fSalida;
@@ -45,7 +45,7 @@ public class ThreadChatServer extends Thread{
 						switch (mensaje.gerMessage()) {
 							case "getLista":
 								//Quiere la lista por lo que se la devolvemos
-								this.fSalida.writeObject(ThreadChatServer.udpClients);
+								this.fSalida.writeObject(udpClients.getClientes());
 								break;
 						
 							default:
@@ -55,10 +55,10 @@ public class ThreadChatServer extends Thread{
 				}else if(peticion instanceof UdpChatClient){
 					//Es el cliente enseñando su saludo inicial
 					UdpChatClient clienteReal = (UdpChatClient) peticion;
-					if((count = ThreadChatServer.udpClients.stream().filter(e-> e.getNickName().equals(clienteReal.getNickName())).count()) == 0){
+					if((count = udpClients.getClientes().stream().filter(e-> e.getNickName().equals(clienteReal.getNickName())).count()) == 0){
 						//No es repetido
-						ThreadChatServer.udpClients.add(clienteReal);
-						this.fSalida.writeObject(ThreadChatServer.udpClients);
+						udpClients.addCliente(clienteReal);
+						this.fSalida.writeObject(udpClients.getClientes());
 					}
 				}
 			}
