@@ -26,35 +26,7 @@ public class ChatClient {
 	private Socket socket;
 	private ObjectOutputStream fSalida;
 	private ObjectInputStream fEntrada;
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		String nickName="";
-
-		ChatClient chatClient = new ChatClient();
-
-		System.out.print("Introduzca su nombre:");
-		nickName = sc.next();
-
-		if(chatClient.connect(nickName)) {
-			//se obtiene la lista de clientes UDP para chatear
-			try {
-				chatClient.fSalida = new ObjectOutputStream(chatClient.socket.getOutputStream());
-				chatClient.fSalida.writeObject(chatClient.localClient);
-
-				chatClient.fEntrada = new ObjectInputStream(chatClient.socket.getInputStream());
-				chatClient.udpChatClients = (ArrayList<UdpChatClient>) chatClient.fEntrada.readObject();
-				chatClient.leer();
-				//chatClient.getUdpClients();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			chatClient.menu();
-			
-			System.out.println("Gracias por usar el servicio!");
-		}
-
-		sc.close();
-	}
+	
 	private void menu() {
 		Scanner sc = new Scanner(System.in);
 		int option=0;
