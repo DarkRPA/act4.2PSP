@@ -1,5 +1,7 @@
 package psp.tematres.chatdam.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +13,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -20,8 +23,9 @@ import psp.tematres.chatdam.util.Message;
 public class ChatClient {
 	private final int SERVER_PORT=9999;
 	private final String SERVER_ADDRESS="localhost";
+	private UdpChatClient localClient;
 	private UdpChatClient udpChatClient;
-	private ArrayList<UdpChatClient> udpChatClients;
+	private List<UdpChatClient> udpChatClients;
 	private Socket socket;
 	private ObjectOutputStream fSalida;
 	private ObjectInputStream fEntrada;
@@ -38,16 +42,17 @@ public class ChatClient {
 			//se obtiene la lista de clientes UDP para chatear
 			try {
 				chatClient.fSalida = new ObjectOutputStream(chatClient.socket.getOutputStream());
-				chatClient.fSalida.writeObject(chatClient.udpChatClient);
+				chatClient.fSalida.writeObject(chatClient.localClient);
 
 				chatClient.fEntrada = new ObjectInputStream(chatClient.socket.getInputStream());
 				chatClient.udpChatClients = (ArrayList<UdpChatClient>) chatClient.fEntrada.readObject();
-
+				chatClient.leer();
 				//chatClient.getUdpClients();
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 			chatClient.menu();
+			
 			System.out.println("Gracias por usar el servicio!");
 		}
 	}
@@ -70,8 +75,8 @@ public class ChatClient {
 				System.out.println("> Usuarios en el chat");
 				//se muestra la lista de clientes de chat con los que conversar
 				this.udpChatClients.stream().filter(e->!e.getNickName()
-						.equals(this.udpChatClient.getNickName())
-						&& e.getUdpPort()!=this.udpChatClient.getUdpPort()).forEach(e->System.out.println(e.getNickName()
+						.equals(this.localClient.getNickName())
+						&& e.getUdpPort()!=this.localClient.getUdpPort()).forEach(e->System.out.println(e.getNickName()
 								+ this.udpChatClients.indexOf(e) + 1));
 				break;
 			case 2:
@@ -114,7 +119,7 @@ public void getUdpClients() throws IOException, ClassNotFoundException{
 	Message mensaje = new Message(null, null, "getLista");
 	this.fSalida.writeObject(mensaje);
 
-	ArrayList<UdpChatClient> clientes = (ArrayList<UdpChatClient>) this.fEntrada.readObject();
+	List<UdpChatClient> clientes = (List<UdpChatClient>) this.fEntrada.readObject();
 	this.udpChatClients = clientes;
 }
 
@@ -123,13 +128,13 @@ public boolean connect(String nickName) {
 	try {
 		hostAddress =InetAddress.getLocalHost().getHostAddress();
 
-		this.udpChatClient=new UdpChatClient(nickName,
+		this.localClient=new UdpChatClient(nickName,
 				hostAddress);
 
 		//preguntamos al servidor, conexión TCP, por la lista de clientes para el chat
 		this.socket = new Socket(SERVER_ADDRESS,SERVER_PORT);
 		//después de la conexión al servidor obtengo el puerto TCP en el client
-		this.udpChatClient.setUdpPort(this.socket.getLocalPort());
+		this.localClient.setUdpPort(this.socket.getLocalPort());
 		if(this.socket==null)return false;
 	} catch (IOException e) {
 		e.printStackTrace();
@@ -137,41 +142,83 @@ public boolean connect(String nickName) {
 	}
 	return true;
 }
+
+public void leer(){
+	
+	Thread hiloTemp = new Thread(() -> {
+		//Aqui debemos de escuchar por peticiones externas
+		try {
+			DatagramSocket socketUdp = new DatagramSocket(this.localClient.getUdpPort());
+
+			while(!ChatClient.this.socket.isClosed()){
+				byte[] buffer = new byte[1000];
+				//Mientras no se haya cerrado el socket leemos
+				DatagramPacket paqueteRespuesta = new DatagramPacket(buffer, buffer.length);
+				socketUdp.receive(paqueteRespuesta);
+				
+				ByteArrayInputStream inputStream = new ByteArrayInputStream(paqueteRespuesta.getData());
+				ObjectInputStream lector = new ObjectInputStream(inputStream);
+
+				Message mensaje = null;
+				try {
+					mensaje = (Message)lector.readObject();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				System.out.println("Mensaje de "+mensaje.getUdpChatClientFrom().getNickName()+": "+mensaje.gerMessage());
+			}
+			//Ahora debemos de leer todos los mensajes que podamos recibir
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	});
+
+	hiloTemp.start();
+}
+
 public void chatWith(UdpChatClient udpChatClientTo) {
 	DatagramSocket socketUDP=null;
 	try {
 		socketUDP = new DatagramSocket();
 		Scanner sc = new Scanner(System.in);
 		String mensajePeticion="";
-		byte[] mensajeRespuesta = new byte[1000];
 		InetAddress hostServidor = 
 				InetAddress.getByName(udpChatClientTo.getHostAddress());
 		int puertoServidor = udpChatClientTo.getUdpPort();
 
 		// Construimos el DatagramPacket que contendrá la 
 		//respuesta
-		while(!mensajeRespuesta.equals("*") || !mensajePeticion.equals("*")) {
-			mensajePeticion = sc.next();
+		while(!mensajePeticion.equals("*")) {
+			mensajePeticion = sc.nextLine();
 			//Construimos un datagrama para enviar el mensaje al 
 			//servidor
-			DatagramPacket peticion =
-					new DatagramPacket(mensajePeticion.getBytes(), 
-							mensajePeticion.length(), 
-							hostServidor,puertoServidor);
+
+			//Vamos a intentar pasar el mensaje como tal para tener informacion de todo en general
+			ByteArrayOutputStream conversor = new ByteArrayOutputStream(1000);
+			ObjectOutputStream escritor = new ObjectOutputStream(conversor);
+
+			Message mensaje = new Message(this.localClient, this.udpChatClient, mensajePeticion);
+			escritor.writeObject(mensaje);
+
+			byte[] resultado = conversor.toByteArray();
+
+			DatagramPacket peticion = new DatagramPacket(resultado, resultado.length, hostServidor,puertoServidor);
 
 			// Enviamos el datagrama
 			socketUDP.send(peticion);
 
-			DatagramPacket respuesta =
-					new DatagramPacket(mensajeRespuesta, 
-							mensajeRespuesta.toString().length());
+			//DatagramPacket respuesta = new DatagramPacket(mensajeRespuesta, mensajeRespuesta.toString().length());
 
-			socketUDP.receive(respuesta);
+			//socketUDP.receive(respuesta);
 			// Mostramos la respuesta del cliente a la salida 
 			//estandar
-			System.out.println("Respuesta: " + new 
-					String(respuesta.getData()));
+			//System.out.println("Respuesta: " + new String(respuesta.getData()));
 		}
+		sc.close();
+
 	} catch (SocketException e) {
 		System.out.println("Socket: " + e.getMessage());
 	} catch (IOException e) {

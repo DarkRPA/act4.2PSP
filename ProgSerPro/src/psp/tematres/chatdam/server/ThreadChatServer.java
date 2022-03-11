@@ -46,6 +46,7 @@ public class ThreadChatServer extends Thread{
 							case "getLista":
 								//Quiere la lista por lo que se la devolvemos
 								this.fSalida.writeObject(udpClients.getClientes());
+								this.fSalida.reset();
 								break;
 						
 							default:

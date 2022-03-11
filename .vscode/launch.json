@@ -1,0 +1,98 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch Vaso",
+            "request": "launch",
+            "mainClass": "psp.hilos.espera.Vaso",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch LanzarDados",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.LanzarDados",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestHiloEstado",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.TestHiloEstado",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch ThreadYield",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.ThreadYield",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestContador",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.synch.TestContador",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestContadorSynch",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.synch.TestContadorSynch",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestHiloSaldo",
+            "request": "launch",
+            "mainClass": "psp.temados.hilos.synch.TestHiloSaldo",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestProductorConsumidor",
+            "request": "launch",
+            "mainClass": "psp.temados.proco.TestProductorConsumidor",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch ChatClient",
+            "request": "launch",
+            "mainClass": "psp.tematres.chatdam.client.ChatClient",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch ChatServer",
+            "request": "launch",
+            "mainClass": "psp.tematres.chatdam.server.ChatServer",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TcpClient",
+            "request": "launch",
+            "mainClass": "psp.tematres.sockets.TcpClient",
+            "projectName": "ProgSerPro"
+        },
+        {
+            "type": "java",
+            "name": "Launch TcpServer",
+            "request": "launch",
+            "mainClass": "psp.tematres.sockets.TcpServer",
+            "projectName": "ProgSerPro"
+        }
+    ]
+}
