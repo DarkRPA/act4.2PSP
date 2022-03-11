@@ -5,16 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -55,6 +52,8 @@ public class ChatClient {
 			
 			System.out.println("Gracias por usar el servicio!");
 		}
+
+		sc.close();
 	}
 	private void menu() {
 		Scanner sc = new Scanner(System.in);
@@ -111,6 +110,7 @@ public class ChatClient {
 			}
 			option = sc.nextInt();
 		}
+		sc.close();
 }
 
 public void getUdpClients() throws IOException, ClassNotFoundException{

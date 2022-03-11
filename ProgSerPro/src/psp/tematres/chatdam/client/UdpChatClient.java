@@ -1,7 +1,6 @@
 package psp.tematres.chatdam.client;
 
 import java.io.Serializable;
-import java.net.Socket;
 import java.time.LocalDateTime;
 //TODO: revisar, optimizar y documentar el código (JavaDoc)
 public class UdpChatClient implements Serializable {
