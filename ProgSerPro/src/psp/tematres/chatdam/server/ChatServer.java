@@ -12,15 +12,6 @@ public class ChatServer {
 	private ArrayList<UdpChatClient> udpChatClients;
 	private ServerSocket serverSocket;
 	private boolean stopServer=false;
-	
-	public static void main(String[] args) {
-		try {
-			ChatServer chatServer = new ChatServer(9999);
-			chatServer.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private ChatServer(int port) throws IOException {
 		this.serverSocket = new ServerSocket(port);
