@@ -27,6 +27,7 @@ public class ChatClient {
 	private ObjectOutputStream fSalida;
 	private ObjectInputStream fEntrada;
 	public static void main(String[] args) {
+		//Pedimos un nick de usuario
 		Scanner sc = new Scanner(System.in);
 		String nickName="";
 
