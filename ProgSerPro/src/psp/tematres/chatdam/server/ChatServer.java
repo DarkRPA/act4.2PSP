@@ -13,7 +13,10 @@ public class ChatServer {
 	private ServerSocket serverSocket;
 	private boolean stopServer=false;
 
-	
+	public static void main(String[] args) throws IOException  {
+		ChatServer chat = new ChatServer(9999);
+		chat.start();
+	}
 
 	private ChatServer(int port) throws IOException {
 		this.serverSocket = new ServerSocket(port);
