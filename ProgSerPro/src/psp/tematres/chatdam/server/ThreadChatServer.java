@@ -47,7 +47,11 @@ public class ThreadChatServer extends Thread{
 								this.fSalida.writeObject(udpClients.getClientes());
 								this.fSalida.reset();
 								break;
-						
+							case "desconectar":
+								//El usuario se va a desconectar por lo que simplemente lo eliminamos de la lista
+								UdpChatClient clienteFrom = mensaje.getUdpChatClientFrom();
+								ThreadChatServer.udpClients.removeCliente(clienteFrom);
+								break;
 							default:
 								break;
 						}

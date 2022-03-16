@@ -33,32 +33,26 @@ public class ChatClient {
 		ChatClient chatClient = new ChatClient();
 
 		System.out.print("Introduzca su nombre:");
-		nickName = sc.next();
-
-		if(chatClient.connect(nickName)) {
-			//se obtiene la lista de clientes UDP para chatear
-			try {
-				chatClient.fSalida = new ObjectOutputStream(chatClient.socket.getOutputStream());
-				chatClient.fSalida.writeObject(chatClient.localClient);
-
-				chatClient.fEntrada = new ObjectInputStream(chatClient.socket.getInputStream());
-				chatClient.udpChatClients = (ArrayList<UdpChatClient>) chatClient.fEntrada.readObject();
-				chatClient.leer();
-				//chatClient.getUdpClients();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
+		boolean acabado = false;
+		while(!acabado){
+			String nombre = sc.next();
+			if(chatClient.connect(nombre)){
+				acabado = true;
+				continue;
 			}
-			chatClient.menu();
-			
-			System.out.println("Gracias por usar el servicio!");
+			System.out.println("El nombre ya está repetido, por favor elija otro nombre");
 		}
+
+		System.out.println("Ya puede usar el programa, use 1 para listar los usuarios 2 para elegir un usuario 3 para hablar con ese usuario y 4 para terminar la aplicacion");
+		chatClient.leer();
+		chatClient.menu();
 
 		sc.close();
 	}
 	private void menu() {
 		Scanner sc = new Scanner(System.in);
 		int option=0;
-		while(option!=4) {
+		while(option!=-1) {
 			//TODO: definir opciones de menú para: 1. listar usuarios con los que chatear
 			//2. seleccionar usuario con el chatear, 3. chatear con usuario seleccionado 
 			//y 4. salir (finaliza el programa)
@@ -101,11 +95,15 @@ public class ChatClient {
 			case 4:
 				//TODO: terminar la sesión de chat
 				System.out.println("Hasta luego");
-					try {
-						this.socket.close();
-					} catch (IOException e1) {
-					}
-					System.exit(0);
+				//Debemos de enviar al servidor que se va a salir
+				try {
+					Message mensajeCerrar = new Message(this.localClient, null, "desconectar");
+					this.fSalida.writeObject(mensajeCerrar);
+					this.fSalida.reset();
+					this.socket.close();
+				} catch (IOException e1) {
+				}
+				System.exit(0);
 				break;
 			}
 			option = sc.nextInt();
@@ -118,6 +116,11 @@ public void getUdpClients() throws IOException, ClassNotFoundException{
 	//mas dificultad
 	Message mensaje = new Message(null, null, "getLista");
 	this.fSalida.writeObject(mensaje);
+	this.fSalida.reset();
+
+	if(this.fEntrada == null){
+		this.fEntrada = new ObjectInputStream(this.socket.getInputStream());
+	}
 
 	List<UdpChatClient> clientes = (List<UdpChatClient>) this.fEntrada.readObject();
 	this.udpChatClients = clientes;
@@ -128,15 +131,25 @@ public boolean connect(String nickName) {
 	try {
 		hostAddress =InetAddress.getLocalHost().getHostAddress();
 
-		this.localClient=new UdpChatClient(nickName,
-				hostAddress);
+		this.localClient=new UdpChatClient(nickName, hostAddress);
 
+		if(this.socket == null){
+			//Establecemos la conexion aunque el cliente no aparecerá en ningún lado pues aún no envió su información
+			this.socket = new Socket(SERVER_ADDRESS,SERVER_PORT);			
+			this.fSalida = new ObjectOutputStream(this.socket.getOutputStream());
+		}
+		//this.fEntrada = new ObjectInputStream(this.socket.getInputStream());
+		this.getUdpClients();
+		int cantIguales = (int) this.udpChatClients.stream().filter(e -> e.getNickName().equals(nickName)).count();
+		if(cantIguales > 0){
+			return false;
+		}
+
+		this.fSalida.writeObject(this.localClient);
 		//preguntamos al servidor, conexión TCP, por la lista de clientes para el chat
-		this.socket = new Socket(SERVER_ADDRESS,SERVER_PORT);
 		//después de la conexión al servidor obtengo el puerto TCP en el client
 		this.localClient.setUdpPort(this.socket.getLocalPort());
-		if(this.socket==null)return false;
-	} catch (IOException e) {
+	} catch (IOException | ClassNotFoundException e) {
 		e.printStackTrace();
 		return false;
 	}
