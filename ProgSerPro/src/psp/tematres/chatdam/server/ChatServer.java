@@ -13,6 +13,8 @@ public class ChatServer {
 	private ServerSocket serverSocket;
 	private boolean stopServer=false;
 
+	
+
 	private ChatServer(int port) throws IOException {
 		this.serverSocket = new ServerSocket(port);
 	}
