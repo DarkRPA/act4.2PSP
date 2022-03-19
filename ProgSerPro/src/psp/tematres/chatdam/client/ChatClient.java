@@ -16,7 +16,11 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import psp.tematres.chatdam.util.Message;
-//TODO: revisar, optimizar y documentar el código (JavaDoc)
+/**
+ * Clase para la configuración de la parte del cliente de un chat
+ * @author Ionut Razvan Neda & Daniel Caparros Duran
+ * @version 1.0
+ */
 public class ChatClient {
 	private final int SERVER_PORT=9999;
 	private final String SERVER_ADDRESS="localhost";
@@ -27,12 +31,12 @@ public class ChatClient {
 	private ObjectOutputStream fSalida;
 	private ObjectInputStream fEntrada;
 	public static void main(String[] args) {
-		//Pedimos un nick de usuario
+		//Creamos un Scanner para pedir el Nickname al usuario
 		Scanner sc = new Scanner(System.in);
 		String nickName="";
-
+		//Creamos un objeto del cliente
 		ChatClient chatClient = new ChatClient();
-
+		//Pedimos que introduzca un nombre válido al usuario
 		System.out.print("Introduzca su nombre:");
 		boolean acabado = false;
 		while(!acabado){
@@ -41,9 +45,10 @@ public class ChatClient {
 				acabado = true;
 				continue;
 			}
+			//En caso de ya estar repetido el nombre lo indicamos
 			System.out.println("El nombre ya está repetido, por favor elija otro nombre");
 		}
-
+		//Si el nombre se ha introducido de manera correcta el usuario ya puede acceder
 		System.out.println("Ya puede usar el programa, use 1 para listar los usuarios 2 para elegir un usuario 3 para hablar con ese usuario y 4 para terminar la aplicacion");
 		chatClient.leer();
 		chatClient.menu();
@@ -54,7 +59,7 @@ public class ChatClient {
 		Scanner sc = new Scanner(System.in);
 		int option=0;
 		while(option!=-1) {
-			//TODO: definir opciones de menú para: 1. listar usuarios con los que chatear
+			//1. listar usuarios con los que chatear
 			//2. seleccionar usuario con el chatear, 3. chatear con usuario seleccionado 
 			//y 4. salir (finaliza el programa)
 			switch(option) {
@@ -94,7 +99,7 @@ public class ChatClient {
 				}
 				break;
 			case 4:
-				//TODO: terminar la sesión de chat
+				//terminar la sesión de chat
 				System.out.println("Hasta luego");
 				//Debemos de enviar al servidor que se va a salir
 				try {
