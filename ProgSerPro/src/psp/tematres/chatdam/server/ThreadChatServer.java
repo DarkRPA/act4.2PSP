@@ -8,7 +8,12 @@ import java.net.Socket;
 import psp.tematres.chatdam.client.UdpChatClient;
 import psp.tematres.chatdam.util.Message;
 
-//TODO: revisar, optimizar y documentar el código (JavaDoc)
+/**
+ * Configuramos la clase ThreadChatServer que será la encargada de
+ * gestionar la entrada y salida de los mensajes del chat
+ * @author Ionut Razvan Neda
+ * @version 1.0
+ */
 public class ThreadChatServer extends Thread{
 	private static ArrayCliente udpClients = new ArrayCliente();
 	private ChatServer serverSocket;
@@ -23,7 +28,6 @@ public class ThreadChatServer extends Thread{
 			this.fEntrada = new ObjectInputStream(socket.getInputStream());
 			this.fSalida = new ObjectOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

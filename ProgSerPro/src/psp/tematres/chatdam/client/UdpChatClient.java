@@ -2,7 +2,11 @@ package psp.tematres.chatdam.client;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-//TODO: revisar, optimizar y documentar el código (JavaDoc)
+/**
+ * Clase para la configuración del cliente
+ * @author Ionut Razvan Neda & Daniel Caparros Duran
+ * @version 1.0
+ */
 public class UdpChatClient implements Serializable {
 	private static final long serialVersionUID = -4244532618185868835L;
 	private String nickName;

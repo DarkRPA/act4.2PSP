@@ -7,7 +7,11 @@ import java.util.ArrayList;
 
 import psp.tematres.chatdam.client.UdpChatClient;
 
-//TODO: revisar, optimizar y documentar el código (JavaDoc)
+/**
+ * Configuramos el chat por la parte del servidor
+ * @author Ionut Razvan Neda & Daniel Caparros Duran
+ * @version 1.0
+ */
 public class ChatServer {
 	private ArrayList<UdpChatClient> udpChatClients;
 	private ServerSocket serverSocket;
@@ -17,7 +21,7 @@ public class ChatServer {
 		ChatServer chat = new ChatServer(9999);
 		chat.start();
 	}
-
+	//Configuramos el servidor
 	private ChatServer(int port) throws IOException {
 		this.serverSocket = new ServerSocket(port);
 	}
@@ -27,6 +31,7 @@ public class ChatServer {
 	public void setUdpChatClients(ArrayList<UdpChatClient> udpChatClients) {
 		this.udpChatClients = udpChatClients;
 	}
+	//Iniciamos el servidor
 	public void start() {
 		System.out.println("Servidor...");
 		new Thread(new Runnable() {

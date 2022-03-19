@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import psp.tematres.chatdam.client.UdpChatClient;
-
+/**
+ * Clase para crear un array de todos los clientes del chat,
+ * esta será la encargada de gestionar los usuarios
+ * @author Ionut Razvan Neda & Daniel Caparros Duran
+ * @version 1.0
+ */
 public class ArrayCliente implements Serializable{
     private static final long serialVersionUID = -8371543L;
     private ArrayList<UdpChatClient> clientes;
